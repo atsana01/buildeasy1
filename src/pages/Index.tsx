@@ -14,6 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { Sparkles, Home, Users, Zap, ChevronRight } from 'lucide-react';
 import { getRandomExamples } from '@/data/projectExamples';
+import { TypingAnimation } from '@/components/TypingAnimation';
 const Index = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -185,7 +186,7 @@ const Index = () => {
           {/* Header with Auth Buttons */}
           <div className="flex items-center justify-between w-full mb-16">
             <div className="flex items-center space-x-2">
-              <img src="/lovable-uploads/569809aa-baff-4dfd-a37e-09697c885f6d.png" alt="Logo" className="h-[120px] w-auto object-contain" />
+              <img src="/lovable-uploads/569809aa-baff-4dfd-a37e-09697c885f6d.png" alt="Logo" className="h-16 w-auto object-contain" />
             </div>
             
             {/* Single Login/Signup Button */}
@@ -202,7 +203,9 @@ const Index = () => {
           <div className="space-y-4">
             <h1 className="text-5xl md:text-7xl font-bold leading-tight">
               I want to build
-              <span className="bg-gradient-primary bg-clip-text text-transparent"> anything</span>
+              <span className="bg-gradient-primary bg-clip-text text-transparent">
+                <TypingAnimation text=" anything" duration={2000} />
+              </span>
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
               Describe your dream project and let our AI connect you with the perfect professionals to make it happen.

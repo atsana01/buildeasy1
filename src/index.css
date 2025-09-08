@@ -154,3 +154,24 @@ All colors MUST be HSL.
   transition: all 0.2s ease;
   border: none;
 }
+
+/* Mobile optimization */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  h1 {
+    font-size: 2.5rem;
+    line-height: 1.2;
+  }
+  
+  .grid {
+    gap: 1rem;
+  }
+  
+  .card {
+    padding: 1rem;
+  }
+}

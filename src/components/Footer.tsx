@@ -6,88 +6,69 @@ import { Home, Mail, Phone, MapPin } from 'lucide-react';
 export const Footer = () => {
   return (
     <footer className="bg-card border-t border-border">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
-          {/* Brand Section */}
-          <div className="space-y-4 md:col-span-2">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col md:flex-row justify-between items-start gap-8">
+          {/* Brand Section - Compact */}
+          <div className="space-y-3 max-w-md">
             <div className="flex items-center space-x-2">
-              <img src="/lovable-uploads/569809aa-baff-4dfd-a37e-09697c885f6d.png" alt="Logo" className="h-[120px] w-auto object-contain" />
+              <img src="/lovable-uploads/569809aa-baff-4dfd-a37e-09697c885f6d.png" alt="Logo" className="h-16 w-auto object-contain" />
             </div>
             <p className="text-muted-foreground text-sm">
               Connecting dreams with the right professionals to build anything, anywhere.
             </p>
-            <div className="space-y-2">
+            <div className="space-y-1">
               <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                <Mail className="w-4 h-4" />
+                <Mail className="w-3 h-3" />
                 <span>support@buildeasy.com</span>
               </div>
               <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                <Phone className="w-4 h-4" />
+                <Phone className="w-3 h-3" />
                 <span>+1 (555) 123-4567</span>
               </div>
             </div>
           </div>
 
-          {/* How It Works */}
-          <div className="space-y-4">
-            <h3 className="font-semibold text-foreground">How It Works</h3>
-            <ul className="space-y-2">
-              <li><Link to="/faq#getting-started" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Getting Started</Link></li>
-              <li><Link to="/faq#submitting-requests" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Submitting Requests</Link></li>
-              <li><Link to="/faq#matching-process" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Matching Process</Link></li>
-              <li><Link to="/faq#project-management" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Project Management</Link></li>
-            </ul>
-          </div>
+          {/* Navigation Links */}
+          <div className="flex flex-wrap gap-8 md:gap-12">
+            {/* How It Works */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-foreground text-sm">How It Works</h3>
+              <ul className="space-y-1">
+                <li><Link to="/faq#getting-started" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Getting Started</Link></li>
+                <li><Link to="/faq#submitting-requests" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Submitting Requests</Link></li>
+                <li><Link to="/faq#matching-process" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Matching Process</Link></li>
+                <li><Link to="/faq#project-management" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Project Management</Link></li>
+              </ul>
+            </div>
 
-          {/* Support */}
-          <div className="space-y-4">
-            <h3 className="font-semibold text-foreground">Support</h3>
-            <ul className="space-y-2">
-              <li><Link to="/faq" className="text-sm text-muted-foreground hover:text-foreground transition-colors">FAQ</Link></li>
-              <li><Link to="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Contact Us</Link></li>
-              <li><Link to="/faq#account-types" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Account Types</Link></li>
-              <li><Link to="/faq#payments" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Payment & Billing</Link></li>
-            </ul>
-          </div>
+            {/* Support */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-foreground text-sm">Support</h3>
+              <ul className="space-y-1">
+                <li><Link to="/faq" className="text-xs text-muted-foreground hover:text-foreground transition-colors">FAQ</Link></li>
+                <li><Link to="/contact" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Contact Us</Link></li>
+                <li><Link to="/faq#account-types" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Account Types</Link></li>
+                <li><Link to="/faq#payments" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Payment & Billing</Link></li>
+              </ul>
+            </div>
 
-          {/* Legal & Actions */}
-          <div className="space-y-4 md:col-span-2">
-            <div className="flex flex-col md:flex-row gap-8">
-              {/* Legal Links */}
-              <div className="space-y-4 flex-1">
-                <h3 className="font-semibold text-foreground">Legal</h3>
-                <ul className="space-y-2">
-                  <li><Link to="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Terms of Service</Link></li>
-                  <li><Link to="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</Link></li>
-                  <li><Link to="/cookies" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Cookie Policy</Link></li>
-                  <li><Link to="/acceptable-use" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Acceptable Use</Link></li>
-                </ul>
-              </div>
-              
-              {/* Divider & Sign Up Buttons */}
-              <div className="flex flex-col items-center space-y-4">
-                <div className="hidden md:block w-px h-24 bg-border"></div>
-                <div className="flex flex-col gap-3">
-                  <Link to="/auth?type=client">
-                    <Button size="lg" className="bg-gradient-primary text-white border-0 hover:opacity-90 w-full">
-                      Signup as Client
-                    </Button>
-                  </Link>
-                  <Link to="/auth?type=vendor">
-                    <Button size="lg" className="bg-gradient-primary text-white border-0 hover:opacity-90 w-full">
-                      Signup as Vendor
-                    </Button>
-                  </Link>
-                </div>
-              </div>
+            {/* Legal Links */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-foreground text-sm">Legal</h3>
+              <ul className="space-y-1">
+                <li><Link to="/terms" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Terms of Service</Link></li>
+                <li><Link to="/privacy" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</Link></li>
+                <li><Link to="/cookies" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Cookie Policy</Link></li>
+                <li><Link to="/acceptable-use" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Acceptable Use</Link></li>
+              </ul>
             </div>
           </div>
         </div>
 
         {/* Bottom Section */}
-        <div className="border-t border-border mt-8 pt-8">
-          <div className="text-sm text-muted-foreground text-center">
-            © 2024 BuildEasy. All rights reserved.
+        <div className="border-t border-border mt-6 pt-4">
+          <div className="text-xs text-muted-foreground text-center">
+            © 2025 BuildEasy. All rights reserved.
           </div>
         </div>
       </div>

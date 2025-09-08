@@ -78,7 +78,7 @@ const Tickets = () => {
     
     setLoading(true);
     try {
-      // Fetch quote requests with related data
+      // Fetch quote requests first
       const { data: quoteRequests, error } = await supabase
         .from('quote_requests')
         .select('*')
@@ -87,25 +87,25 @@ const Tickets = () => {
 
       if (error) throw error;
 
-      // Fetch related project and vendor data for each quote request
-      const transformedTickets: Ticket[] = [];
-      
-      for (const qr of quoteRequests || []) {
-        // Fetch project data
-        const { data: project } = await supabase
-          .from('projects')
-          .select('title, description, service_groups')
-          .eq('id', qr.project_id)
-          .single();
+      // Batch fetch project and vendor data
+      const projectIds = [...new Set(quoteRequests?.map(qr => qr.project_id) || [])];
+      const vendorIds = [...new Set(quoteRequests?.map(qr => qr.vendor_id) || [])];
 
-        // Fetch vendor profile data
-        const { data: vendorProfile } = await supabase
-          .from('vendor_profiles')
-          .select('business_name, location, rating, total_reviews, verification_status, specialty')
-          .eq('user_id', qr.vendor_id)
-          .single();
+      const [projectsResult, vendorProfilesResult] = await Promise.all([
+        supabase.from('projects').select('id, title, description, service_groups').in('id', projectIds),
+        supabase.from('vendor_profiles').select('user_id, business_name, location, rating, total_reviews, verification_status, specialty').in('user_id', vendorIds)
+      ]);
 
-        transformedTickets.push({
+      // Create lookup maps
+      const projectsMap = new Map(projectsResult.data?.map(p => [p.id, p]) || []);
+      const vendorsMap = new Map(vendorProfilesResult.data?.map(v => [v.user_id, v]) || []);
+
+      // Transform the data
+      const transformedTickets: Ticket[] = (quoteRequests || []).map(qr => {
+        const project = projectsMap.get(qr.project_id);
+        const vendorProfile = vendorsMap.get(qr.vendor_id);
+        
+        return {
           id: qr.id,
           groupName: project?.service_groups?.[0] || 'General',
           vendor: {
@@ -124,8 +124,8 @@ const Tickets = () => {
           createdAt: new Date(qr.created_at),
           quotedAmount: qr.quoted_amount ? `$${qr.quoted_amount}` : undefined,
           notes: qr.vendor_notes || undefined
-        });
-      }
+        };
+      });
 
       setTickets(transformedTickets);
     } catch (error: any) {

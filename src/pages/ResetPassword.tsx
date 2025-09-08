@@ -29,7 +29,7 @@ const ResetPassword = () => {
       return;
     }
 
-    // Set the session with the tokens from the URL
+    // Set the session with the tokens from the URL (but don't auto-login)
     supabase.auth.setSession({
       access_token: accessToken,
       refresh_token: refreshToken
@@ -80,7 +80,7 @@ const ResetPassword = () => {
         return;
       }
 
-      toast.success('Password updated successfully!');
+      toast.success('Password updated successfully! You are now logged in.');
       
       // Redirect to dashboard after successful password reset
       navigate('/dashboard');
