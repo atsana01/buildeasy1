@@ -24,7 +24,7 @@ import AcceptableUse from "./pages/AcceptableUse";
 import ResetPassword from "./pages/ResetPassword";
 import QuotesHistory from "./pages/QuotesHistory";
 import PaymentBilling from "./pages/PaymentBilling";
-import { ProtectedRoute } from "./components/ProtectedRoute";
+import { RoleGuard } from "./components/RoleGuard";
 
 const queryClient = new QueryClient();
 
@@ -59,34 +59,34 @@ const App = () => (
                         <Route path="/cookies" element={<Cookies />} />
                         <Route path="/acceptable-use" element={<AcceptableUse />} />
                         <Route path="/dashboard" element={
-                          <ProtectedRoute requiredUserType="client">
-                            <Tickets />
-                          </ProtectedRoute>
+                          <RoleGuard allowedUserTypes={['client']}>
+                            <Dashboard />
+                          </RoleGuard>
                         } />
                         <Route path="/vendor-dashboard" element={
-                          <ProtectedRoute requiredUserType="vendor">
+                          <RoleGuard allowedUserTypes={['vendor']}>
                             <VendorDashboard />
-                          </ProtectedRoute>
+                          </RoleGuard>
                         } />
                         <Route path="/profile" element={
-                          <ProtectedRoute>
+                          <RoleGuard allowedUserTypes={['client', 'vendor']}>
                             <Profile />
-                          </ProtectedRoute>
+                          </RoleGuard>
                         } />
                         <Route path="/tickets" element={
-                          <ProtectedRoute requiredUserType="client">
+                          <RoleGuard allowedUserTypes={['client']}>
                             <Tickets />
-                          </ProtectedRoute>
+                          </RoleGuard>
                         } />
                         <Route path="/quotes-history" element={
-                          <ProtectedRoute requiredUserType="client">
+                          <RoleGuard allowedUserTypes={['client']}>
                             <QuotesHistory />
-                          </ProtectedRoute>
+                          </RoleGuard>
                         } />
                         <Route path="/payment-billing" element={
-                          <ProtectedRoute>
+                          <RoleGuard allowedUserTypes={['client', 'vendor']}>
                             <PaymentBilling />
-                          </ProtectedRoute>
+                          </RoleGuard>
                         } />
                         <Route path="*" element={<NotFound />} />
                       </Routes>

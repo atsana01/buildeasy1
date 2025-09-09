@@ -81,11 +81,12 @@ const Tickets = () => {
     
     setLoading(true);
     try {
-      // Fetch quote requests first
+      // Fetch quote requests first (excluding soft-deleted ones)
       const { data: quoteRequests, error } = await supabase
         .from('quote_requests')
         .select('*')
         .eq('client_id', user.id)
+        .is('deleted_at', null)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -199,9 +200,10 @@ const Tickets = () => {
     if (!ticketToDelete) return;
     
     try {
+      // Soft delete by setting deleted_at timestamp
       const { error } = await supabase
         .from('quote_requests')
-        .delete()
+        .update({ deleted_at: new Date().toISOString() } as any)
         .eq('id', ticketToDelete)
         .eq('client_id', user?.id); // Extra security check
 

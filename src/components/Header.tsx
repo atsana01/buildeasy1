@@ -14,7 +14,7 @@ export const Header = () => {
             <img 
               src="/lovable-uploads/569809aa-baff-4dfd-a37e-09697c885f6d.png" 
               alt="BuildEasy Logo" 
-              className="h-20 w-auto object-contain hover:scale-105 transition-transform" 
+              className="h-24 w-auto object-contain hover:scale-105 transition-transform" 
             />
           </Link>
           

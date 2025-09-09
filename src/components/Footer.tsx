@@ -11,7 +11,7 @@ export const Footer = () => {
           {/* Brand Section - Compact */}
           <div className="space-y-3 max-w-md">
             <div className="flex items-center space-x-2">
-              <img src="/lovable-uploads/569809aa-baff-4dfd-a37e-09697c885f6d.png" alt="Logo" className="h-16 w-auto object-contain" />
+              <img src="/lovable-uploads/569809aa-baff-4dfd-a37e-09697c885f6d.png" alt="BuildEasy Logo" className="h-20 w-auto object-contain" />
             </div>
             <p className="text-muted-foreground text-sm">
               Connecting dreams with the right professionals to build anything, anywhere.

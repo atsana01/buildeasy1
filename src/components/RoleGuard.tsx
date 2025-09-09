@@ -63,6 +63,9 @@ export const RoleGuard: React.FC<RoleGuardProps> = ({
   }
 
   if (userType && !allowedUserTypes.includes(userType as 'client' | 'vendor')) {
+    // Show error message for wrong account type
+    toast.error(`Access denied. This area is for ${allowedUserTypes.join(' and ')} accounts only.`);
+    
     // Redirect based on user type
     const redirectTo = userType === 'vendor' ? '/vendor-dashboard' : '/dashboard';
     return <Navigate to={redirectTo} replace />;
