@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_logs: {
+        Row: {
+          action: string
+          id: string
+          new_values: Json | null
+          old_values: Json | null
+          record_id: string
+          table_name: string
+          timestamp: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          id?: string
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id: string
+          table_name: string
+          timestamp?: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          id?: string
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id?: string
+          table_name?: string
+          timestamp?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           file_url: string | null
@@ -57,6 +90,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      password_reset_tokens: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          token: string
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          token?: string
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          token?: string
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -109,6 +169,48 @@ export type Database = {
         }
         Relationships: []
       }
+      project_vendors: {
+        Row: {
+          id: string
+          project_id: string
+          removed_at: string | null
+          selected_at: string
+          selection_status: string
+          vendor_id: string
+        }
+        Insert: {
+          id?: string
+          project_id: string
+          removed_at?: string | null
+          selected_at?: string
+          selection_status?: string
+          vendor_id: string
+        }
+        Update: {
+          id?: string
+          project_id?: string
+          removed_at?: string | null
+          selected_at?: string
+          selection_status?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_vendors_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_vendors_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       projects: {
         Row: {
           budget_range: string | null
@@ -117,13 +219,16 @@ export type Database = {
           description: string
           form_data: Json | null
           id: string
+          is_active: boolean | null
           location: string | null
+          project_name: string | null
           project_type: string | null
           service_groups: string[] | null
           status: Database["public"]["Enums"]["project_status"] | null
           timeline: string | null
           title: string
           updated_at: string
+          vendor_selections: Json | null
         }
         Insert: {
           budget_range?: string | null
@@ -132,13 +237,16 @@ export type Database = {
           description: string
           form_data?: Json | null
           id?: string
+          is_active?: boolean | null
           location?: string | null
+          project_name?: string | null
           project_type?: string | null
           service_groups?: string[] | null
           status?: Database["public"]["Enums"]["project_status"] | null
           timeline?: string | null
           title: string
           updated_at?: string
+          vendor_selections?: Json | null
         }
         Update: {
           budget_range?: string | null
@@ -147,13 +255,16 @@ export type Database = {
           description?: string
           form_data?: Json | null
           id?: string
+          is_active?: boolean | null
           location?: string | null
+          project_name?: string | null
           project_type?: string | null
           service_groups?: string[] | null
           status?: Database["public"]["Enums"]["project_status"] | null
           timeline?: string | null
           title?: string
           updated_at?: string
+          vendor_selections?: Json | null
         }
         Relationships: []
       }
@@ -161,6 +272,8 @@ export type Database = {
         Row: {
           client_id: string
           created_at: string
+          deleted_at: string | null
+          deletion_reason: string | null
           estimated_timeline: string | null
           id: string
           project_id: string
@@ -175,6 +288,8 @@ export type Database = {
         Insert: {
           client_id: string
           created_at?: string
+          deleted_at?: string | null
+          deletion_reason?: string | null
           estimated_timeline?: string | null
           id?: string
           project_id: string
@@ -189,6 +304,8 @@ export type Database = {
         Update: {
           client_id?: string
           created_at?: string
+          deleted_at?: string | null
+          deletion_reason?: string | null
           estimated_timeline?: string | null
           id?: string
           project_id?: string
