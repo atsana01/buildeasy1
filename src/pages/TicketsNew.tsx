@@ -143,25 +143,69 @@ const TicketsNew = () => {
   }, [tickets, searchTerm, statusFilter]);
 
   const handleDeleteRequest = async (ticketId: string) => {
+    if (!user?.id) {
+      toast({
+        title: "Error",
+        description: "User not authenticated",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
-      // Soft delete the quote request - using any to bypass TypeScript for deleted_at
-      const { error } = await supabase
+      console.log('Deleting quote request:', ticketId, 'for user:', user.id);
+      
+      // First verify the record exists and belongs to the user
+      const { data: existingRecord, error: fetchError } = await supabase
+        .from('quote_requests')
+        .select('id, client_id, status')
+        .eq('id', ticketId)
+        .eq('client_id', user.id)
+        .is('deleted_at', null)
+        .single();
+
+      if (fetchError || !existingRecord) {
+        console.error('Record not found or fetch error:', fetchError);
+        toast({
+          title: "Error",
+          description: "Quote request not found or access denied",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Perform the soft delete with explicit typing
+      const { error: updateError, data } = await supabase
         .from('quote_requests')
         .update({ 
           deleted_at: new Date().toISOString(),
           deletion_reason: 'Deleted by client'
         } as any)
         .eq('id', ticketId)
-        .eq('client_id', user?.id);
+        .eq('client_id', user.id)
+        .is('deleted_at', null)
+        .select();
 
-      if (error) throw error;
+      if (updateError) {
+        console.error('Update error:', updateError);
+        throw updateError;
+      }
 
+      if (!data || data.length === 0) {
+        throw new Error('No rows were updated - record may have been already deleted');
+      }
+
+      console.log('Successfully deleted quote request:', data);
+
+      // Remove from local state immediately for better UX
+      setTickets(prevTickets => prevTickets.filter(t => t.id !== ticketId));
+      
       toast({
         title: "Success",
         description: "Quote request deleted successfully",
       });
 
-      // Hard refresh to ensure data consistency
+      // Refresh data to ensure consistency
       if (activeProjectId) {
         await fetchTicketsForProject(activeProjectId);
       }
@@ -170,7 +214,7 @@ const TicketsNew = () => {
       console.error('Delete error:', error);
       toast({
         title: "Error",
-        description: "Failed to delete quote request",
+        description: `Failed to delete quote request: ${error.message}`,
         variant: "destructive",
       });
     }
