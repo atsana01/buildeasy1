@@ -86,42 +86,26 @@ const Auth = () => {
     const redirectUser = async () => {
       if (user) {
         try {
-          const { data } = await supabase
+          const { data, error } = await supabase
             .from('profiles')
             .select('user_type')
             .eq('user_id', user.id)
             .single();
           
-          // Validate user type matches the auth context
-          const userType = data?.user_type;
-          
-          // Prevent clients from accessing vendor areas and vice versa
-          if (initialUserType === 'vendor' && userType === 'client') {
-            toast({
-              title: 'Access Denied',
-              description: 'You cannot access vendor areas with a client account.',
-              variant: 'destructive'
-            });
+          if (error) {
+            console.error('Error fetching user type:', error);
             navigate('/dashboard');
             return;
           }
           
-          if (initialUserType === 'client' && userType === 'vendor') {
-            toast({
-              title: 'Access Denied', 
-              description: 'You cannot access client areas with a vendor account.',
-              variant: 'destructive'
-            });
-            navigate('/vendor-dashboard');
-            return;
-          }
+          const userType = data?.user_type;
           
-          // Redirect based on context
+          // Redirect based on user type
           if (redirectParam === 'quote' || wasRedirectedFromAuth) {
             // User was redirected from quote flow
             if (userType === 'client') {
               navigate('/');
-            } else {
+            } else if (userType === 'vendor') {
               navigate('/vendor-dashboard');
             }
           } else {
@@ -133,13 +117,14 @@ const Auth = () => {
             }
           }
         } catch (error) {
+          console.error('Auth redirect error:', error);
           navigate('/dashboard');
         }
       }
     };
 
     redirectUser();
-  }, [user, navigate, initialUserType, redirectParam, wasRedirectedFromAuth]);
+  }, [user, navigate, redirectParam, wasRedirectedFromAuth]);
 
   const handleLogin = async (data: LoginForm) => {
     setLoading(true);
@@ -149,24 +134,11 @@ const Auth = () => {
         password: data.password,
       });
 
-      if (error) throw error;
-      
-      // Check user type matches expected type
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('user_type')
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
-        .single();
-      
-      if (profile && initialUserType !== profile.user_type) {
-        await supabase.auth.signOut();
-        toast({
-          title: 'Access Denied',
-          description: `This account is registered as a ${profile.user_type}. Please use the correct login option.`,
-          variant: 'destructive'
-        });
-        setLoading(false);
-        return;
+      if (error) {
+        if (error.message.includes('Invalid login credentials')) {
+          throw new Error('Invalid email or password. Please check your credentials and try again.');
+        }
+        throw error;
       }
       
       toast({ title: 'Welcome back!', description: 'You have been signed in successfully.' });
