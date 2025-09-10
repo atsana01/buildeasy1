@@ -31,6 +31,10 @@ export const ConfirmDeleteDialog: React.FC<ConfirmDeleteDialogProps> = ({
     setIsDeleting(true);
     try {
       await onConfirm();
+      // Close dialog after successful deletion
+      onOpenChange(false);
+    } catch (error) {
+      console.error('Delete confirmation error:', error);
     } finally {
       setIsDeleting(false);
     }
