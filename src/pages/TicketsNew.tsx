@@ -13,7 +13,7 @@ import { toast } from '@/hooks/use-toast';
 import SendMessageModal from '@/components/SendMessageModal';
 import TicketDetailsModal from '@/components/TicketDetailsModal';
 import { ConfirmDeleteDialog } from '@/components/ConfirmDeleteDialog';
-import { ProjectTabsFixed as ProjectTabs } from '@/components/ProjectTabsFixed';
+import { ProjectTabsSimple as ProjectTabs } from '@/components/ProjectTabsSimple';
 
 interface Ticket {
   id: string;
@@ -144,32 +144,30 @@ const TicketsNew = () => {
 
   const handleDeleteRequest = async (ticketId: string) => {
     try {
-      // First, get the quote request to find the vendor and project
-      const { data: quoteRequest } = await supabase
+      // Soft delete the quote request - using any to bypass TypeScript for deleted_at
+      const { error } = await supabase
         .from('quote_requests')
-        .select('vendor_id, project_id')
+        .update({ 
+          deleted_at: new Date().toISOString(),
+          deletion_reason: 'Deleted by client'
+        } as any)
         .eq('id', ticketId)
-        .eq('client_id', user?.id)
-        .single();
+        .eq('client_id', user?.id);
 
       if (error) throw error;
-        // Soft delete the quote request
-        const { error } = await supabase
-          .from('quote_requests')
-          .update({ deleted_at: new Date().toISOString() } as any)
-          .eq('id', ticketId);
-      }
 
       toast({
         title: "Success",
         description: "Quote request deleted successfully",
       });
 
-      // Refresh the tickets list
+      // Hard refresh to ensure data consistency
       if (activeProjectId) {
-        fetchTicketsForProject(activeProjectId);
+        await fetchTicketsForProject(activeProjectId);
       }
+      
     } catch (error: any) {
+      console.error('Delete error:', error);
       toast({
         title: "Error",
         description: "Failed to delete quote request",

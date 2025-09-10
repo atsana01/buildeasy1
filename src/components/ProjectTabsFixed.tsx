@@ -47,13 +47,7 @@ export const ProjectTabsFixed: React.FC<ProjectTabsProps> = ({
     if (!user) return;
     
     try {
-      // Use a simple query without TypeScript strict typing
-      const response = await supabase
-        .rpc('get_user_projects', { user_id: user.id })
-        .then(() => null)
-        .catch(() => null);
-
-      // Fallback to direct query with any typing
+      // Direct query for user projects
       const { data, error } = await (supabase as any)
         .from('projects')
         .select('id, project_name, title, description, status, created_at')

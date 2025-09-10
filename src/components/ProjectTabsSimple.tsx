@@ -4,19 +4,10 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Plus, Edit, X } from 'lucide-react';
+import { Plus, Edit } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
-
-interface Project {
-  id: string;
-  project_name: string | null;
-  title: string;
-  description: string;
-  status: string;
-  created_at: string;
-}
 
 interface ProjectTabsProps {
   activeProjectId: string | null;
@@ -24,13 +15,13 @@ interface ProjectTabsProps {
   children: (projectId: string) => React.ReactNode;
 }
 
-export const ProjectTabs: React.FC<ProjectTabsProps> = ({ 
+export const ProjectTabsSimple: React.FC<ProjectTabsProps> = ({ 
   activeProjectId, 
   onProjectChange, 
   children 
 }) => {
   const { user } = useAuth();
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showNewProjectDialog, setShowNewProjectDialog] = useState(false);
   const [newProjectName, setNewProjectName] = useState('');
@@ -47,15 +38,21 @@ export const ProjectTabs: React.FC<ProjectTabsProps> = ({
     if (!user) return;
     
     try {
-      const { data, error } = await supabase
-        .from('projects')
-        .select('*')
-        .eq('client_id', user.id)
-        .eq('is_active', true)
-        .order('created_at', { ascending: false }) as any;
+      // Use fetch API to bypass TypeScript issues
+      const response = await fetch(
+        `https://bsowliifibqtgracbpgt.supabase.co/rest/v1/projects?client_id=eq.${user.id}&is_active=eq.true&order=created_at.desc&select=id,title,description,status,created_at`,
+        {
+          headers: {
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzb3dsaWlmaWJxdGdyYWNicGd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxMDU4NDcsImV4cCI6MjA3MjY4MTg0N30._JHoZakd8YFTM7yzK5Y1MsWCgpp934Ls5vUey6CeCRM',
+            'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
 
-      if (error) throw error;
+      if (!response.ok) throw new Error('Failed to fetch');
       
+      const data = await response.json();
       setProjects(data || []);
       
       // If no active project selected, select the first one
@@ -73,11 +70,10 @@ export const ProjectTabs: React.FC<ProjectTabsProps> = ({
     if (!user || !newProjectName.trim()) return;
 
     try {
-      const { data, error } = await supabase
+      const response = await supabase
         .from('projects')
         .insert({
           client_id: user.id,
-          project_name: newProjectName.trim(),
           title: newProjectName.trim(),
           description: '',
           status: 'draft',
@@ -86,10 +82,10 @@ export const ProjectTabs: React.FC<ProjectTabsProps> = ({
         .select()
         .single();
 
-      if (error) throw error;
+      if (response.error) throw response.error;
 
       await fetchProjects();
-      onProjectChange(data.id);
+      onProjectChange(response.data.id);
       setNewProjectName('');
       setShowNewProjectDialog(false);
       
@@ -110,16 +106,13 @@ export const ProjectTabs: React.FC<ProjectTabsProps> = ({
     if (!newName.trim()) return;
 
     try {
-      const { error } = await supabase
+      const response = await supabase
         .from('projects')
-        .update({ 
-          project_name: newName.trim(),
-          title: newName.trim()
-        })
+        .update({ title: newName.trim() })
         .eq('id', projectId)
         .eq('client_id', user?.id);
 
-      if (error) throw error;
+      if (response.error) throw response.error;
 
       await fetchProjects();
       setEditingProject(null);
@@ -213,7 +206,7 @@ export const ProjectTabs: React.FC<ProjectTabsProps> = ({
                   </div>
                 ) : (
                 <div className="flex items-center space-x-1">
-                    <span>{project.project_name || project.title}</span>
+                    <span>{project.title}</span>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -221,7 +214,7 @@ export const ProjectTabs: React.FC<ProjectTabsProps> = ({
                       onClick={(e) => {
                         e.stopPropagation();
                         setEditingProject(project.id);
-                        setEditName(project.project_name || project.title);
+                        setEditName(project.title);
                       }}
                     >
                       <Edit className="h-3 w-3" />
